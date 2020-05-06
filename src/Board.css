@@ -1,0 +1,14 @@
+.Shogitter-Board {
+
+}
+.Shogitter-Board table {
+    border-collapse: collapse;
+}
+.Shogitter-Board td {
+    border: 1px black solid;
+}
+
+.Shogitter-Board img {
+    height: 48px;
+    width: 43px;
+}
