@@ -1,6 +1,6 @@
 import React, {FunctionComponent} from "react";
 import {useDrop} from "react-dnd";
-import {ItemTypes} from "./DndConstants";
+import {ItemTypes} from "./dnd/Constants";
 import { Direction, Species } from "shogitter-ts/lib/Ban";
 import {XYObj} from "./Board";
 import classnames from "classnames";

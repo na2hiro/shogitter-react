@@ -17,17 +17,28 @@ const Shogitter: FunctionComponent<Props> = ({data, onCommand}) => {
     const shogitter: Shogi = useMemo(() => new Shogi(data), [data]);
 
     const onDrag = useCallback((xy: XYObj) => {
+        console.log("drag", xy)
         setMoving(xy);
         setActiveCells(shogitter.ban.get(new XY(xy.x, xy.y)).getMovable().map(xy => ({x: xy.XY.x, y: xy.XY.y})))
     }, [shogitter])
     const onDrop = useCallback((xy: XYObj) => {
-        onCommand({
-            from: [moving!.x, moving!.y],
-            to: [xy.x, xy.y],
-            nari: false
-        })
-        onClear();
-    }, [shogitter, moving]);
+        if(activeCells.filter(cell=>cell.x==xy.x&&cell.y==xy.y).length>0) {
+            console.log("drop: execute", xy)
+            // TODO: Unless nakamaware, we don't want to drop to a piece on the same side
+            onCommand({
+                from: [moving!.x, moving!.y],
+                to: [xy.x, xy.y],
+                nari: false
+            })
+            onClear();
+        } else if((xy.x==moving!.x&&xy.y==moving!.y) || !shogitter.ban.exists(new XY(xy.x, xy.y))) {
+            console.log("drop: clear", xy)
+            onClear();
+        } else {
+            console.log("drop: drag", xy)
+            onDrag(xy);
+        }
+    }, [shogitter, moving, activeCells]);
     const onClear = useCallback(() => {
         setMoving(null);
         setActiveCells([])
@@ -37,18 +48,12 @@ const Shogitter: FunctionComponent<Props> = ({data, onCommand}) => {
         <div style={{display: "flex"}}>
             <Player player={players[1]}/>
             <Board board={ban} onClick={({x, y}) => {
+                console.log("click")
                 const xy = new XY(x, y);
                 if(moving){
-                    if(activeCells.filter(cell=>cell.x==x&&cell.y==y).length>0) {
-                        // TODO: Unless nakamaware, we don't want to drop to a piece on the same side
-                        onDrop({x, y});
-                    } else if(shogitter.ban.exists(xy)) {
-                        onDrag({x, y});
-                    } else {
-                        onClear();
-                    }
+                    onDrop({x, y});
                 }else if (shogitter.ban.exists(xy)) {
-                    onDrag(xy);
+                    onDrag({x, y});
                 }
             }} activeCells={activeCells} moving={moving} {...{onDrag, onDrop, onClear}} />
             <Player player={players[0]}/>

@@ -1,8 +1,10 @@
 import React, {FunctionComponent} from "react";
 import { BanObj } from "shogitter-ts/lib/Ban";
-import {DndProvider} from "react-dnd-multi-backend";
-import HTML5toTouch from 'react-dnd-multi-backend/dist/cjs/HTML5toTouch';
+import Backend from "react-dnd-multi-backend";
+import {DndProvider} from "react-dnd";
 import Cell from "./Cell";
+import MouseToTouch from "./dnd/MouseToTouch";
+import PiecePreview from "./PiecePreview";
 
 export type XYObj = {x: number, y: number};
 type BoardProps = {
@@ -30,7 +32,8 @@ const Board: FunctionComponent<BoardProps> = (props) => {
         trs.push(<tr key={y}>{tds}</tr>);
     }
     return <div className="Shogitter-Board">
-        <DndProvider options={HTML5toTouch}>
+        <DndProvider backend={Backend} options={MouseToTouch}>
+            <PiecePreview />
             <table>
                 <tbody>
                 {trs}
