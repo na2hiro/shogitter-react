@@ -6,6 +6,7 @@
 }
 .Shogitter-Board td {
     border: 1px black solid;
+    padding: 0;
 }
 
 .Shogitter-Board img {

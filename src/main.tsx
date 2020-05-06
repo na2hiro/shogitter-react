@@ -1,9 +1,5 @@
 import React from "react";
 import {render} from "react-dom";
-import Shogitter from "./Shogitter";
-// @ts-ignore
-import Shogi from "shogitter-ts";
+import LocalClient from "./LocalClient";
 
-const shogi = new Shogi(0, -1);
-
-render(<Shogitter data={shogi.getObject()} />, document.getElementById("main"));
+render(<LocalClient />, document.getElementById("main"));

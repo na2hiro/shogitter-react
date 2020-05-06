@@ -1,77 +1,63 @@
-import Shogi, {ShogiSerialization} from "shogitter-ts";
-import React, {FunctionComponent, useMemo} from "react";
+import Shogi, {ShogiSerialization, KifuCommand} from "shogitter-ts";
+import React, {FunctionComponent, useCallback, useMemo, useState} from "react";
 import {PlayerInfo} from "shogitter-ts/lib/Teban";
-import {BanObj, Direction, Species} from "shogitter-ts/lib/Ban";
 
 import "./Board.css";
 import XY from "shogitter-ts/lib/XY";
+import Board, {XYObj} from "./Board";
 
 export type Props = {
-    data: ShogiSerialization
+    data: ShogiSerialization;
+    onCommand: (command: KifuCommand) => void
 }
-const Shogitter: FunctionComponent<Props> = ({data}) => {
+const Shogitter: FunctionComponent<Props> = ({data, onCommand}) => {
     const {ban, players, ...rest} = data;
+    const [activeCells, setActiveCells] = useState<XYObj[]>([]);
+    const [moving, setMoving] = useState<XYObj | null>(null);
     const shogitter: Shogi = useMemo(() => new Shogi(data), [data]);
+
+    const onDrag = useCallback((xy: XYObj) => {
+        setMoving(xy);
+        setActiveCells(shogitter.ban.get(new XY(xy.x, xy.y)).getMovable().map(xy => ({x: xy.XY.x, y: xy.XY.y})))
+    }, [shogitter])
+    const onDrop = useCallback((xy: XYObj) => {
+        onCommand({
+            from: [moving!.x, moving!.y],
+            to: [xy.x, xy.y],
+            nari: false
+        })
+        onClear();
+    }, [shogitter, moving]);
+    const onClear = useCallback(() => {
+        setMoving(null);
+        setActiveCells([])
+    }, [shogitter]);
+
     return <div style={{display: "flex", flexDirection: "column"}}>
-        <pre>
-            {JSON.stringify(rest, null, 2)}
-        </pre>
         <div style={{display: "flex"}}>
             <Player player={players[1]}/>
             <Board board={ban} onClick={({x, y}) => {
-                console.log(shogitter.ban.get(new XY(x+1, y+1)).getMovable().map(xy=>xy.XY.toString()));
-            }}/>
+                const xy = new XY(x, y);
+                if(moving){
+                    if(activeCells.filter(cell=>cell.x==x&&cell.y==y).length>0) {
+                        // TODO: Unless nakamaware, we don't want to drop to a piece on the same side
+                        onDrop({x, y});
+                    } else if(shogitter.ban.exists(xy)) {
+                        onDrag({x, y});
+                    } else {
+                        onClear();
+                    }
+                }else if (shogitter.ban.exists(xy)) {
+                    onDrag(xy);
+                }
+            }} activeCells={activeCells} moving={moving} {...{onDrag, onDrop, onClear}} />
             <Player player={players[0]}/>
         </div>
+        <pre>
+            {JSON.stringify(rest, null, 2)}
+        </pre>
     </div>
 };
-type XYObj = {x: number, y: number};
-
-type BoardProps = {
-    board: BanObj;
-    onClick: (xy: XYObj) => void;
-}
-const Board: FunctionComponent<BoardProps> = ({board, onClick}) => {
-    // TODO size
-    const trs = [];
-    for(let y=0; y<9; y++) {
-        const tds = [];
-            for(let x=8; x>=0; x--) {
-            tds.push(<td key={x}><Cell data={board[x][y]} onClick={() => onClick({x, y})}/></td>);
-        }
-        trs.push(<tr key={y}>{tds}</tr>);
-    }
-    return <div className="Shogitter-Board">
-        <table>
-            <tbody>
-                {trs}
-            </tbody>
-        </table>
-    </div>
-}
-
-type CellProps = {
-    data: [Direction, Species] | [];
-    onClick: () => void;
-}
-
-const Cell: FunctionComponent<CellProps> = ({data, onClick}) => {
-    if(data.length==0) {
-        return <img src={`./img/koma/___.png`} onClick={onClick} />;
-    } else {
-        return <Piece direction={data[0]} species={data[1]} onClick={onClick} />
-    }
-
-}
-
-type PieceProps = {
-    species: Species;
-    direction: Direction;
-    onClick: () => void;
-}
-const Piece: FunctionComponent<PieceProps> = ({species, direction, onClick}) => {
-    return <img src={`./img/koma/${direction}${species}.png`} onClick={onClick}/>;
-}
 
 type PlayerProps = {
     player: PlayerInfo;
