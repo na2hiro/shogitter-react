@@ -18,6 +18,7 @@ const LocalClient: FunctionComponent<Props> = () => {
             setData(shogitter.getObject());
         }catch(e) {
             alert(e);
+            console.error(e);
             // When error occurs, shogitter is broken. (i.e. move is not an atomic operation) Need to recreate.
             setShogitter(new Shogi(data));
         }
