@@ -6,13 +6,13 @@ import {XYObj} from "./Board";
 import classnames from "classnames";
 
 import "./Cell.css";
-import Piece from "./Piece";
+import Piece, {Position} from "./Piece";
 
 type CellProps = {
     xy: XYObj,
     data: [Direction, Species] | [];
     onClick: (xy: XYObj) => void;
-    onDrag: (xy: XYObj) => void;
+    onDrag: (pos: Position) => void;
     onDrop: (xy: XYObj) => void;
     onClear: () => void;
     active: boolean;
@@ -23,7 +23,7 @@ const Cell: FunctionComponent<CellProps> = ({data, onClick, onDrag, onDrop, onCl
     const onClickXY = () => onClick(xy);
     const [{ isOver, canDrop }, drop] = useDrop({
         accept: ItemTypes.PIECE_ON_BOARD,
-        drop: () => onDrop(xy),
+        drop: () => {onDrop(xy)},
         collect: mon => ({
             isOver: mon.isOver(),
             canDrop: mon.canDrop(),
@@ -34,7 +34,7 @@ const Cell: FunctionComponent<CellProps> = ({data, onClick, onDrag, onDrop, onCl
     if(data.length==0) {
         cell = <img src={`./img/koma/___.png`} onClick={onClickXY} />;
     } else {
-        cell = <Piece direction={data[0]} species={data[1]} onClick={onClick} xy={xy} onDrag={onDrag} onClear={onClear}  />
+        cell = <Piece direction={data[0]} species={data[1]} onClick={onClick} position={xy} onDrag={onDrag} onClear={onClear}  />
     }
     return <div ref={drop} className={classnames({
         "Shogitter-Cell--active": active,

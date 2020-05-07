@@ -1,20 +1,17 @@
 import React, {FunctionComponent} from "react";
 import { BanObj } from "shogitter-ts/lib/Ban";
-import Backend from "react-dnd-multi-backend";
-import {DndProvider} from "react-dnd";
 import Cell from "./Cell";
-import MouseToTouch from "./dnd/MouseToTouch";
-import PiecePreview from "./PiecePreview";
+import {Position} from "./Piece";
 
 export type XYObj = {x: number, y: number};
 type BoardProps = {
     board: BanObj;
     onClick: (xy: XYObj) => void;
-    onDrag: (xy: XYObj) => void;
+    onDrag: (pos: Position) => void;
     onDrop: (xy: XYObj) => void;
     onClear: () => void;
     activeCells: XYObj[];
-    moving: XYObj | null;
+    moving: Position | null;
 }
 const Board: FunctionComponent<BoardProps> = (props) => {
     const {board, activeCells, moving, ...rest} = props;
@@ -25,21 +22,18 @@ const Board: FunctionComponent<BoardProps> = (props) => {
         for(let x=9; x>=1; x--) {
             const active = activeCells.filter(xy=>xy.x==x && xy.y==y).length>0;
             tds.push(<td key={x}>
-                <Cell data={board[x-1][y-1]} xy={{x, y}} active={active} moving={moving!==null && (moving.x==x && moving.y==y)}
+                <Cell data={board[x-1][y-1]} xy={{x, y}} active={active} moving={moving!==null && ("x" in moving) && (moving.x==x && moving.y==y)}
                     {...rest} />
             </td>);
         }
         trs.push(<tr key={y}>{tds}</tr>);
     }
     return <div className="Shogitter-Board">
-        <DndProvider backend={Backend} options={MouseToTouch}>
-            <PiecePreview />
-            <table>
-                <tbody>
-                {trs}
-                </tbody>
-            </table>
-        </DndProvider>
+        <table>
+            <tbody>
+            {trs}
+            </tbody>
+        </table>
     </div>
 }
 export default Board;
