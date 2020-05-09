@@ -2,7 +2,6 @@ import Shogi, {ShogiSerialization, KifuCommand} from "shogitter-ts";
 import React, {FunctionComponent, useCallback, useMemo, useState} from "react";
 import History from "./History";
 
-import "./Board.css";
 import XY from "shogitter-ts/lib/XY";
 import Board, {XYObj} from "./Board";
 import Hand from "./Hand";

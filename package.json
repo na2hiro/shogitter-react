@@ -2,8 +2,11 @@
   "name": "shogitter-react",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "./dist/Shogitter.js",
   "scripts": {
+    "build": "webpack --mode=production",
+    "build:dev": "webpack --mode=development",
+    "build:dev:watch": "webpack --mode=development --watch",
     "start:dev": "webpack-dev-server",
     "postinstall": "npm link shogitter-ts",
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -12,8 +15,7 @@
   "license": "ISC",
   "devDependencies": {
     "@babel/core": "^7.9.6",
-    "css-loader": "^3.5.3",
-    "style-loader": "^1.2.1",
+    "babel-loader": "^8.1.0",
     "ts-loader": "^7.0.2",
     "typescript": "^3.8.3",
     "webpack": "^4.43.0",
@@ -21,8 +23,9 @@
     "webpack-dev-server": "^3.10.3"
   },
   "dependencies": {
-    "babel-loader": "^8.1.0",
-    "classnames": "^2.2.6",
+    "@babel/preset-env": "^7.9.6",
+    "@emotion/core": "^10.0.28",
+    "babel-plugin-emotion": "^10.0.33",
     "react": "^16.13.1",
     "react-dnd": "^10.0.2",
     "react-dnd-html5-backend": "^10.0.2",

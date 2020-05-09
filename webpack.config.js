@@ -1,7 +1,9 @@
 const path = require('path');
 
+const entry = process.env.WEBPACK_DEV_SERVER ? {main: './src/main.tsx'} : {Shogitter: './src/Shogitter.tsx'};
+
 module.exports = {
-    entry: './src/main.tsx',
+    entry,
     module: {
         rules: [
             {
@@ -12,13 +14,6 @@ module.exports = {
                 ],
                 exclude: /node_modules/,
             },
-            {
-                test: /\.css$/,
-                use: [
-                    'style-loader',
-                    'css-loader'
-                ]
-            },
         ],
     },
     devtool: "source-map",
@@ -26,12 +21,18 @@ module.exports = {
         extensions: ['.tsx', '.ts', '.js'],
     },
     output: {
-        filename: 'main.js',
+        filename: '[name].js',
+        libraryTarget: 'commonjs',
         path: path.resolve(__dirname, 'dist'),
     },
     devServer: {
         open: true,
+        host: "192.168.11.7",
         contentBase: path.join(__dirname, 'dist'),
         compress: true
+    },
+    externals: {
+        react: "react",
+        "react-dom": "react-dom"
     }
 };

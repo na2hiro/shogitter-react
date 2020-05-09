@@ -1,3 +1,5 @@
+/** @jsx jsx */
+import {jsx, css} from "@emotion/core";
 import React, {FunctionComponent} from "react";
 import { BanObj } from "shogitter-ts/lib/Ban";
 import Cell from "./Cell";
@@ -29,7 +31,14 @@ const Board: FunctionComponent<BoardProps> = (props) => {
         trs.push(<tr key={y}>{tds}</tr>);
     }
     return <div className="Shogitter-Board">
-        <table>
+        <table css={css`
+border-collapse: collapse;
+
+td {
+    border: 1px black solid;
+    padding: 0;
+}
+`}>
             <tbody>
             {trs}
             </tbody>
