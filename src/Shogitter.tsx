@@ -5,7 +5,7 @@ import History from "./History";
 import XY from "shogitter-ts/lib/XY";
 import Board, {XYObj} from "./Board";
 import Hand from "./Hand";
-import {Position} from "./Piece";
+import {InHand, Position} from "./Piece";
 import {DndProvider} from "react-dnd-multi-backend";
 import MouseToTouch from "./dnd/MouseToTouch";
 import PiecePreview from "./PiecePreview";
@@ -26,7 +26,8 @@ const Shogitter: FunctionComponent<Props> = ({data, onCommand}) => {
         if("x" in pos) {
             // Don't block UI
             setTimeout(() => {
-                setActiveCells(shogitter.ban.get(new XY(pos.x, pos.y)).getMovable().map(xy => ({x: xy.XY.x, y: xy.XY.y})))
+                const cells = shogitter.ban.get(new XY(pos.x, pos.y)).getMovable().map(xy => ({x: xy.XY.x, y: xy.XY.y}));
+                setActiveCells(cells)
             })
         }
     }, [shogitter])
@@ -73,9 +74,13 @@ const Shogitter: FunctionComponent<Props> = ({data, onCommand}) => {
         }else if (shogitter.ban.exists(xy)) {
             onDrag({x, y});
         }
-    }, [shogitter, moving]);
-    const onHandClick = useCallback(()=>{
-
+    }, [shogitter, moving, activeCells]);
+    const onHandClick = useCallback((xy: InHand)=>{
+        console.log("hand click")
+        if (moving) {
+            onClear();
+        }
+        onDrag(xy);
     }, [shogitter, moving]);
 
     return <DndProvider options={MouseToTouch}>
@@ -92,16 +97,16 @@ const Shogitter: FunctionComponent<Props> = ({data, onCommand}) => {
                 </div>
                 <Board board={ban} onClick={onCellClick} activeCells={activeCells} moving={moving} {...{onDrag, onDrop, onClear}} />
                 <div style={{display: "flex", flexDirection: "column", flexGrow: 1, width: 0}}>
-                    <div style={{flex: "1 1 0px", height: 0}}>
+                    <div style={{flex: "1 1 0px", height: 0, overflowY: "scroll"}}>
+                        <pre>
+                            {JSON.stringify(rest, null, 2)}
+                        </pre>
                     </div>
                     <div style={{flex: "1 1 0px", height: 0}}>
                         <Hand data={players[0]} direction={0} {...{onDrag, onDrop, onClear}} onClick={onHandClick}/>
                     </div>
                 </div>
             </div>
-            <pre>
-                {JSON.stringify(rest, null, 2)}
-            </pre>
         </div>
     </DndProvider>
 };
