@@ -1,12 +1,14 @@
 /** @jsx jsx */
 import {jsx, css} from "@emotion/core";
-import React, {FunctionComponent} from "react";
+import React, {FunctionComponent, useContext} from "react";
 import {useDrop} from "react-dnd";
 import {ItemTypes} from "./dnd/Constants";
 import { Direction, Species } from "shogitter-ts/lib/Ban";
 import {XYObj} from "./Board";
 
 import Piece, {Position} from "./Piece";
+import {zoomToPieceSizeX, zoomToPieceSizeY} from "./utils/responsive";
+import {ZoomContext} from "./utils/contexts";
 
 type CellProps = {
     xy: XYObj,
@@ -29,6 +31,7 @@ const Cell: FunctionComponent<CellProps> = ({data, onClick, onDrag, onDrop, onCl
             canDrop: mon.canDrop(),
         }),
     })
+    const zoom = useContext(ZoomContext);
 
     let cell;
     if(data.length==0) {
@@ -38,11 +41,6 @@ const Cell: FunctionComponent<CellProps> = ({data, onClick, onDrag, onDrop, onCl
     }
     return <div ref={drop} css={css`
 background-color: ${moving ? "#ddd" : (active ? "#aaf" : "")};
-img {
-    height: 48px;
-    width: 43px;
-    vertical-align: middle;
-}
     `}>
         {cell}
     </div>

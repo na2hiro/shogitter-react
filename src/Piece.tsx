@@ -1,8 +1,12 @@
-import React, {FunctionComponent} from "react";
+/** @jsx jsx */
+import React, {FunctionComponent, useContext} from "react";
 import {useDrag} from "react-dnd";
 import {ItemTypes} from "./dnd/Constants";
 import {Direction, Species} from "shogitter-ts/lib/Ban";
 import {XYObj} from "./Board";
+import {zoomToPieceSizeX, zoomToPieceSizeY} from "./utils/responsive";
+import {ZoomContext} from "./utils/contexts";
+import {css, jsx} from "@emotion/core";
 
 export type Position = XYObj | InHand;
 export type InHand = {
@@ -35,10 +39,13 @@ const Piece: FunctionComponent<Props> = ({species, direction, onClick, onDrag, o
             isDragging: monitor.isDragging(),
         }),
     });
-    return <>
-        <img src={`./img/koma/${direction}${species}.png`} onClick={() => onClick(position)} ref={drag}
-             style={{opacity: isDragging ? 0 : 1}}/>
-    </>;
+    const zoom = useContext(ZoomContext);
+    return <img className="piece" src={`./img/koma/${direction}${species}.png`} onClick={() => onClick(position)} ref={drag}
+             style={{opacity: isDragging ? 0 : 1}} css={css`
+    width: ${zoomToPieceSizeX[zoom]}px;
+    height: ${zoomToPieceSizeY[zoom]}px;
+    vertical-align: middle;
+`}/>;
 
 }
 

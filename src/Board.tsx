@@ -1,9 +1,10 @@
 /** @jsx jsx */
 import {jsx, css} from "@emotion/core";
-import React, {FunctionComponent} from "react";
+import React, {FunctionComponent, useContext} from "react";
 import { BanObj } from "shogitter-ts/lib/Ban";
 import Cell from "./Cell";
 import {Position} from "./Piece";
+import {RuleContext} from "./utils/contexts";
 
 export type XYObj = {x: number, y: number};
 type BoardProps = {
@@ -17,11 +18,12 @@ type BoardProps = {
 }
 const Board: FunctionComponent<BoardProps> = (props) => {
     const {board, activeCells, moving, ...rest} = props;
+    const {size} = useContext(RuleContext)!;
     // TODO size
     const trs: JSX.Element[] = [];
-    for(let y=1; y<=9; y++) {
+    for(let y=1; y<=size[1]; y++) {
         const tds: JSX.Element[] = [];
-        for(let x=9; x>=1; x--) {
+        for(let x=size[0]; x>=1; x--) {
             const active = activeCells.filter(xy=>xy.x==x && xy.y==y).length>0;
             tds.push(<td key={x}>
                 <Cell data={board[x-1][y-1]} xy={{x, y}} active={active} moving={moving!==null && ("x" in moving) && (moving.x==x && moving.y==y)}
@@ -30,9 +32,10 @@ const Board: FunctionComponent<BoardProps> = (props) => {
         }
         trs.push(<tr key={y}>{tds}</tr>);
     }
-    return <div className="Shogitter-Board">
+    return <div>
         <table css={css`
 border-collapse: collapse;
+margin: 0 auto;
 
 td {
     border: 1px black solid;

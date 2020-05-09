@@ -6,9 +6,9 @@ type Props = {
 }
 const History = ({data}) => {
     return <div style={{overflowY: "scroll", height: "100%"}}>
-        <ul>
+        <ol>
             {data.map((line, i) => <li key={i}>{line.disp}</li>)}
-        </ul>
+        </ol>
     </div>
 }
 
