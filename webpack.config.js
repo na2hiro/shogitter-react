@@ -1,9 +1,8 @@
 const path = require('path');
+const {BundleAnalyzerPlugin } = require("webpack-bundle-analyzer");
 
-const entry = process.env.WEBPACK_DEV_SERVER ? {main: './src/main.tsx'} : {Shogitter: './src/Shogitter.tsx'};
-
-module.exports = {
-    entry,
+const config = {
+    entry: {},
     module: {
         rules: [
             {
@@ -16,6 +15,7 @@ module.exports = {
             },
         ],
     },
+    plugins: [],
     devtool: "source-map",
     resolve: {
         extensions: ['.tsx', '.ts', '.js'],
@@ -31,8 +31,22 @@ module.exports = {
         contentBase: path.join(__dirname, 'dist'),
         compress: true
     },
-    externals: {
+    externals: {},
+    optimization: {
+        usedExports: true
+    }
+};
+
+if(process.env.WEBPACK_DEV_SERVER) {
+    config.entry.main = './src/main.tsx';
+    config.output.libraryTarget = "var";
+} else {
+    config.entry.Shogitter ='./src/Shogitter.tsx';
+    config.plugins.push(new BundleAnalyzerPlugin());
+    config.externals = {
         react: "react",
         "react-dom": "react-dom"
     }
-};
+}
+
+module.exports = config;
