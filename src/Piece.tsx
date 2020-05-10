@@ -1,4 +1,3 @@
-/** @jsx jsx */
 import React, {FunctionComponent, useContext} from "react";
 import {useDrag} from "react-dnd";
 import {ItemTypes} from "./dnd/Constants";
@@ -6,7 +5,7 @@ import {Direction, Species} from "shogitter-ts/lib/Ban";
 import {XYObj} from "./Board";
 import {zoomToPieceSizeX, zoomToPieceSizeY} from "./utils/responsive";
 import {ZoomContext} from "./utils/contexts";
-import {css, jsx} from "@emotion/core";
+import {usePreview} from "react-dnd-multi-backend";
 
 export type Position = XYObj | InHand;
 export type InHand = {
@@ -39,14 +38,39 @@ const Piece: FunctionComponent<Props> = ({species, direction, onClick, onDrag, o
             isDragging: monitor.isDragging(),
         }),
     });
-    const zoom = useContext(ZoomContext);
-    return <img className="piece" src={`./img/koma/${direction}${species}.png`} onClick={() => onClick(position)} ref={drag}
-             style={{opacity: isDragging ? 0 : 1}} css={css`
-    width: ${zoomToPieceSizeX[zoom]}px;
-    height: ${zoomToPieceSizeY[zoom]}px;
-    vertical-align: middle;
-`}/>;
-
+    return <RawPiece {...{direction, species}} onClick={() => onClick(position)} ref={drag} style={{
+            opacity: isDragging ? 0 : 1,
+            verticalAlign: "middle",
+        }
+    }/>
 }
+
+export const PiecePreview = () => {
+    const {display, itemType, item, style} = usePreview();
+    return display && <RawPiece direction={item.direction} species={item.species} style={style} />;
+}
+
+export const NullPiece = (props) => {
+    return <RawPiece {...props} />
+}
+
+type RawPieceProps = {
+    direction?: Direction;
+    species?: Species;
+    [prop: string]: any
+}
+
+const RawPiece = React.forwardRef<HTMLImageElement, RawPieceProps>(({direction, species, ...props}, ref) => {
+    const zoom = useContext(ZoomContext);
+    if(!props.style) {
+        props.style = {};
+    }
+    props.style = {
+        ...props.style,
+        width: `${zoomToPieceSizeX[zoom]}px`,
+        height: `${zoomToPieceSizeY[zoom]}px`,
+    }
+    return <img src={`./img/koma/${species ? direction+species : "___"}.png`} {...props} ref={ref} />
+});
 
 export default Piece;

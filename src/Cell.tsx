@@ -6,8 +6,7 @@ import {ItemTypes} from "./dnd/Constants";
 import { Direction, Species } from "shogitter-ts/lib/Ban";
 import {XYObj} from "./Board";
 
-import Piece, {Position} from "./Piece";
-import {zoomToPieceSizeX, zoomToPieceSizeY} from "./utils/responsive";
+import Piece, {NullPiece, Position} from "./Piece";
 import {ZoomContext} from "./utils/contexts";
 
 type CellProps = {
@@ -35,7 +34,7 @@ const Cell: FunctionComponent<CellProps> = ({data, onClick, onDrag, onDrop, onCl
 
     let cell;
     if(data.length==0) {
-        cell = <img src={`./img/koma/___.png`} onClick={onClickXY} />;
+        cell = <NullPiece onClick={onClickXY} />;
     } else {
         cell = <Piece direction={data[0]} species={data[1]} onClick={onClick} position={xy} onDrag={onDrag} onClear={onClear}  />
     }

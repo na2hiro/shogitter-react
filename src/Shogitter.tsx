@@ -6,11 +6,11 @@ import Board from "./Board";
 import Hand from "./Hand";
 import {DndProvider} from "react-dnd-multi-backend";
 import MouseToTouch from "./dnd/MouseToTouch";
-import PiecePreview from "./PiecePreview";
 import {boardHeight, maxWidth, minWidth, zoomToPieceSizeX, zoomToPieceSizeY} from "./utils/responsive";
 import { RuleContext, ZoomContext } from "./utils/contexts";
 import usePieceCallback from "./hooks/usePieceCallback";
 import useZoom from "./hooks/useZoom";
+import {PiecePreview} from "./Piece";
 
 export type Props = {
     data: ShogiSerialization;
