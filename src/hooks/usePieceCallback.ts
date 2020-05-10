@@ -3,6 +3,7 @@ import {InHand, Position} from "../Piece";
 import {XYObj} from "../Board";
 import XY from "shogitter-ts/lib/XY";
 import Shogi, { KifuCommand } from "shogitter-ts";
+import { Direction } from "shogitter-ts/lib/Ban";
 
 const usePieceCallback = (shogitter: Shogi, onCommand: (command: KifuCommand) => void) => {
     const [activeCells, setActiveCells] = useState<XYObj[]>([]);
@@ -36,7 +37,7 @@ const usePieceCallback = (shogitter: Shogi, onCommand: (command: KifuCommand) =>
             onCommand({
                 from: [moving.x, moving.y],
                 to: [xy.x, xy.y],
-                nari: false
+                nari: canPromote(shogitter.teban.getNowDirection(), moving, xy) && confirm("Promote?")
             })
             onClear();
             return true;
@@ -79,6 +80,18 @@ const usePieceCallback = (shogitter: Shogi, onCommand: (command: KifuCommand) =>
         onClear,
         onCellClick,
         onHandClick,
+    }
+}
+
+/**
+ * TODO: Proper promotion confirmation using PromotionStrategy
+ */
+const canPromote = (tebanDirection: Direction, from: XYObj, to: XYObj) => {
+    switch(tebanDirection){
+        case Direction.BLACK:
+            return from.y<=3 || to.y<=3;
+        case Direction.WHITE:
+            return from.y>=7 || to.y>=7;
     }
 }
 
