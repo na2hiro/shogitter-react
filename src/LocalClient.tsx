@@ -12,17 +12,29 @@ const LocalClient: FunctionComponent<Props> = () => {
         return shogitter;
     });
     const [data, setData] = useState(shogitter.getObject());
-    return <Shogitter data={data} onCommand={(command) => {
-        try {
-            shogitter.move_d(command);
-            setData(shogitter.getObject());
-        }catch(e) {
-            alert(e);
-            console.error(e);
-            // When error occurs, shogitter is broken. (i.e. move is not an atomic operation) Need to recreate.
-            setShogitter(new Shogi(data));
-        }
-    }} />
+    return <>
+        <input style={{fontSize: "40px", width: "80px"}} onChange={(e) =>{
+            const ruleId = parseInt(e.target.value);
+            if(!isNaN(ruleId)){
+                console.log("new shogi", ruleId);
+                var newShogi = new Shogi(ruleId);
+                setShogitter(newShogi)
+                newShogi.start();
+                setData(newShogi.getObject());
+            }
+        }} type="number" />
+        <Shogitter data={data} onCommand={(command) => {
+            try {
+                shogitter.move_d(command);
+                setData(shogitter.getObject());
+            }catch(e) {
+                alert(e);
+                console.error(e);
+                // When error occurs, shogitter is broken. (i.e. move is not an atomic operation) Need to recreate.
+                setShogitter(new Shogi(data));
+            }
+        }} />
+    </>
 }
 
 export default LocalClient;

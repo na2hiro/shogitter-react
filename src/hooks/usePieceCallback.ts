@@ -1,4 +1,4 @@
-import {useCallback, useState} from "react";
+import {useCallback, useState, useEffect} from "react";
 import {InHand, Position} from "../Piece";
 import {XYObj} from "../Board";
 import XY from "shogitter-ts/lib/XY";
@@ -8,6 +8,10 @@ import { Direction } from "shogitter-ts/lib/Ban";
 const usePieceCallback = (shogitter: Shogi, onCommand: (command: KifuCommand) => void) => {
     const [activeCells, setActiveCells] = useState<XYObj[]>([]);
     const [moving, setMoving] = useState<Position | null>(null);
+    useEffect(() => {
+        setActiveCells([]);
+        setMoving(null);
+    }, [shogitter]);
 
     const onDrag = useCallback((pos: Position) => {
         console.log("drag", pos)
