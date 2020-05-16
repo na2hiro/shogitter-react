@@ -1,6 +1,10 @@
-import Shogitter from "./Shogitter";
+import Shogitter, {UIConfig} from "./Shogitter";
 import React, {FunctionComponent, useMemo, useState} from "react";
 import Shogi from "shogitter-ts";
+
+const config: UIConfig = {
+    initialReverse: false
+}
 
 type Props = {
 
@@ -23,7 +27,7 @@ const LocalClient: FunctionComponent<Props> = () => {
                 setData(newShogi.getObject());
             }
         }} type="number" />
-        <Shogitter data={data} onCommand={(command) => {
+        <Shogitter data={data} config={config} onCommand={(command) => {
             try {
                 shogitter.move_d(command);
                 setData(shogitter.getObject());

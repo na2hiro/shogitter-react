@@ -4,8 +4,9 @@ import {ItemTypes} from "./dnd/Constants";
 import {Direction, Species} from "shogitter-ts/lib/Ban";
 import {XYObj} from "./Board";
 import {zoomToPieceSizeX, zoomToPieceSizeY} from "./utils/responsive";
-import {ZoomContext} from "./utils/contexts";
+import {ReverseContext, ZoomContext} from "./utils/contexts";
 import {usePreview} from "react-dnd-multi-backend";
+import { Teban } from "shogitter-ts/lib/Teban";
 
 export type Position = XYObj | InHand;
 export type InHand = {
@@ -62,6 +63,7 @@ type RawPieceProps = {
 
 const RawPiece = React.forwardRef<HTMLImageElement, RawPieceProps>(({direction, species, ...props}, ref) => {
     const zoom = useContext(ZoomContext);
+    const isReverse = useContext(ReverseContext);
     if(!props.style) {
         props.style = {};
     }
@@ -70,7 +72,12 @@ const RawPiece = React.forwardRef<HTMLImageElement, RawPieceProps>(({direction, 
         width: `${zoomToPieceSizeX[zoom]}px`,
         height: `${zoomToPieceSizeY[zoom]}px`,
     }
-    return <img src={`./img/koma/${species ? direction+species : "___"}.png`} {...props} ref={ref} />
+    let filename = "___";
+    if(species && (typeof direction !== "undefined")) {
+        filename = (isReverse ? Teban.reverse(direction) : direction)+species
+    }
+    return <img src={`./img/koma/${filename}.png`} {...props} ref={ref} />
 });
+
 
 export default Piece;
