@@ -17,19 +17,9 @@ const LocalClient: FunctionComponent<Props> = () => {
     });
     const [data, setData] = useState(shogitter.getObject());
     return <>
-        <input style={{fontSize: "40px", width: "80px"}} onChange={(e) =>{
-            const ruleId = parseInt(e.target.value);
-            if(!isNaN(ruleId)){
-                console.log("new shogi", ruleId);
-                var newShogi = new Shogi(ruleId);
-                setShogitter(newShogi)
-                newShogi.start();
-                setData(newShogi.getObject());
-            }
-        }} type="number" />
         <Shogitter data={data} config={config} onCommand={(command) => {
             try {
-                shogitter.move_d(command);
+                shogitter.runCommand(command);
                 setData(shogitter.getObject());
             }catch(e) {
                 alert(e);

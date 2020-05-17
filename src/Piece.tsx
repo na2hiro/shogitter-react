@@ -41,7 +41,6 @@ const Piece: FunctionComponent<Props> = ({species, direction, onClick, onDrag, o
     });
     return <RawPiece {...{direction, species}} onClick={() => onClick(position)} ref={drag} style={{
             opacity: isDragging ? 0 : 1,
-            verticalAlign: "middle",
         }
     }/>
 }
@@ -71,6 +70,7 @@ const RawPiece = React.forwardRef<HTMLImageElement, RawPieceProps>(({direction, 
         ...props.style,
         width: `${zoomToPieceSizeX[zoom]}px`,
         height: `${zoomToPieceSizeY[zoom]}px`,
+        verticalAlign: "middle",
     }
     let filename = "___";
     if(species && (typeof direction !== "undefined")) {

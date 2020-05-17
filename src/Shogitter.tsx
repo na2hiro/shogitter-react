@@ -1,5 +1,5 @@
 import Shogi, {ShogiSerialization, KifuCommand} from "shogitter-ts";
-import React, {FunctionComponent, useMemo, useState} from "react";
+import React, {FunctionComponent, useCallback, useEffect, useMemo, useState} from "react";
 import History from "./History";
 
 import Board from "./Board";
@@ -12,9 +12,18 @@ import usePieceCallback from "./hooks/usePieceCallback";
 import useZoom from "./hooks/useZoom";
 import {PiecePreview} from "./Piece";
 import ContextWrapper from "./utils/ContextWrapper";
+import useReverse from "./hooks/useReverse";
+import { shogitterDB } from "shogitter-ts/lib/ShogitterDB";
+import Control from "./Control";
 
 export type UIConfig = {
     initialReverse?: boolean;
+}
+
+export const DndWrapper = ({children}) => {
+    return <DndProvider options={MouseToTouch}>
+        {children}
+    </DndProvider>;
 }
 
 export type Props = {
@@ -22,15 +31,28 @@ export type Props = {
     onCommand: (command: KifuCommand) => void;
     config?: UIConfig;
 }
-const Shogitter: FunctionComponent<Props> = ({data, onCommand, config}) => {
+export const ShogitterWithoutDnDWrapper: FunctionComponent<Props> = ({data, onCommand, config}) => {
     const {ban, players, kifu, ...rest} = data;
-    const [isReverse, setReverse] = useState(config?.initialReverse || false);
+    const key = useMemo(() => {
+        console.log("newShogitter")
+        return Math.random();
+    }, [])
+    const [isReverse, reverse] = useReverse(config?.initialReverse);
     const shogitter: Shogi = useMemo(() => new Shogi(data), [data]);
     const {moving, activeCells, onDrag, onDrop, onClear, onCellClick, onHandClick} = usePieceCallback(shogitter, onCommand);
+    const rollback = useCallback(() => {
+        onCommand({type: "rollback"})
+    }, [shogitter]);
+    const resign = useCallback(() => {
+        onCommand({type: "resign"})
+    }, [shogitter]);
+    const initialize = useCallback((ruleId: number) => {
+        onCommand({type: "initialize", ruleId})
+    }, [shogitter]);
 
     const zoom = useZoom();
 
-    return <DndProvider options={MouseToTouch}>
+    return (
         <ContextWrapper zoom={zoom} rule={shogitter.rule} reverse={isReverse}>
             <PiecePreview />
             <div style={{
@@ -38,14 +60,7 @@ const Shogitter: FunctionComponent<Props> = ({data, onCommand, config}) => {
                 flexDirection: "column",
                 margin: "0 auto"
             }}>
-                <div style={{textAlign: "center"}}>
-                    <b>
-                        Rule: <a href={`http://shogitter.com/rule/${shogitter.rule._id}`} target={"_blank"}>
-                            {shogitter.rule.name}
-                        </a></b>{' '}
-                        <a href={"#"} onClick={(e) => {e.preventDefault(); alert(shogitter.rule.abstract)}}>❓</a>{' '}
-                        <button onClick={() => setReverse(!isReverse)}>🔄</button>
-                </div>
+                <Control shogitter={shogitter} reverse={reverse} rollback={rollback} resign={resign} initialize={initialize}/>
                 <div style={{
                     overflowX: "auto",
                     height: `${boardHeight(shogitter.rule.size[1], zoom)}px`,
@@ -81,7 +96,13 @@ const Shogitter: FunctionComponent<Props> = ({data, onCommand, config}) => {
                 </div>
             </div>
         </ContextWrapper>
-    </DndProvider>
+    );
 };
+
+export const Shogitter: FunctionComponent<Props> = (props) => {
+    return <DndWrapper>
+        <ShogitterWithoutDnDWrapper {...props}/>
+    </DndWrapper>
+}
 
 export default Shogitter;

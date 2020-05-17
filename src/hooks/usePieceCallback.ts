@@ -29,7 +29,9 @@ const usePieceCallback = (shogitter: Shogi, onCommand: (command: KifuCommand) =>
 
         }else if("species" in moving) {
             onCommand({
+                type: "put",
                 put: moving.species,
+                direction: moving.direction,
                 to: [xy.x, xy.y],
                 id: 0 // TODO
             });
@@ -39,6 +41,7 @@ const usePieceCallback = (shogitter: Shogi, onCommand: (command: KifuCommand) =>
             console.log("drop: execute", xy)
             // TODO: Unless nakamaware, we don't want to drop to a piece on the same side
             onCommand({
+                type: "move",
                 from: [moving.x, moving.y],
                 to: [xy.x, xy.y],
                 nari: canPromote(shogitter.teban.getNowDirection(), moving, xy) && confirm("Promote?")
