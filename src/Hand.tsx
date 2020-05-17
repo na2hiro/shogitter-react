@@ -1,5 +1,5 @@
 import React, {FunctionComponent} from "react";
-import Piece, {InHand} from "./Piece";
+import Piece, {InHand, Position} from "./Piece";
 import { Direction } from "shogitter-ts/lib/Ban";
 import { Player } from "shogitter-ts";
 import { Teban } from "shogitter-ts/lib/Teban";
@@ -11,13 +11,19 @@ type Props = {
     onClick: (pos: InHand) => void;
     onDrag: (pos: InHand) => void;
     onClear: () => void;
+    moving: Position | null;
 }
 const Hand: FunctionComponent<Props> = (props) => {
-    const {data, direction, turnDirection, ...rest} = props;
+    const {data, direction, turnDirection, moving, ...rest} = props;
     const pieces: JSX.Element[] = [];
     for(const species in data.mochigoma) {
         for(let i=0; i<data.mochigoma[species]; i++) {
-            pieces.push(<Piece key={species+i} species={species} direction={direction} {...rest} position={{direction, species}} />);
+            pieces.push(<div style={{
+                display: "inline-block",
+                backgroundColor: (moving && "species" in moving && moving.species==species&&moving.direction==direction) ? "#ddd" : "inherit"
+            }}>
+                <Piece key={species+i} species={species} direction={direction} {...rest} position={{direction, species}} />
+            </div>);
         }
     }
     return <div style={{display: "flex", flexDirection: "column", backgroundColor: "#eee", height: "100%"}}>

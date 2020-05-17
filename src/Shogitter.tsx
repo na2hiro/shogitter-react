@@ -75,7 +75,7 @@ export const ShogitterWithoutDnDWrapper: FunctionComponent<Props> = ({data, onCo
                     }}>
                         <div style={{display: "flex", flexDirection: zoom=="sm"?"row":"column", flexGrow: 1, [zoom=="sm"?"height":"width"]: 0}}>
                             <div style={{flex: "1 1 0px", [zoom=="sm"?"width":"height"]: 0}}>
-                                <Hand data={players[isReverse ? 0 : 1]} direction={isReverse ? 0 : 1} turnDirection={shogitter.teban.getNowDirection()} {...{onDrag, onDrop, onClear}} onClick={onHandClick}/>
+                                <Hand data={players[isReverse ? 0 : 1]} direction={isReverse ? 0 : 1} turnDirection={shogitter.teban.getNowDirection()} {...{onDrag, onDrop, onClear}} onClick={onHandClick} moving={moving}/>
                             </div>
                             <div style={{flex: "1 1 0px", [zoom=="sm"?"width":"height"]: 0}}>
                                 <History data={kifu}/>
@@ -89,7 +89,7 @@ export const ShogitterWithoutDnDWrapper: FunctionComponent<Props> = ({data, onCo
                                 </pre>
                             </div>
                             <div style={{flex: "1 1 0px", [zoom=="sm"?"width":"height"]: 0}}>
-                                <Hand data={players[isReverse ? 1 : 0]} direction={isReverse ? 1 : 0} turnDirection={shogitter.teban.getNowDirection()} {...{onDrag, onDrop, onClear}} onClick={onHandClick}/>
+                                <Hand data={players[isReverse ? 1 : 0]} direction={isReverse ? 1 : 0} turnDirection={shogitter.teban.getNowDirection()} {...{onDrag, onDrop, onClear}} onClick={onHandClick} moving={moving}/>
                             </div>
                         </div>
                     </div>

@@ -74,12 +74,15 @@ const usePieceCallback = (shogitter: Shogi, onCommand: (command: KifuCommand) =>
             onDrag({x, y});
         }
     }, [shogitter, moving, activeCells]);
-    const onHandClick = useCallback((xy: InHand)=>{
+    const onHandClick = useCallback((pos: InHand)=>{
         console.log("hand click")
         if (moving) {
             onClear();
+            if(("species" in moving && moving.direction==pos.direction && moving.species==pos.species)){
+                return;
+            }
         }
-        onDrag(xy);
+        onDrag(pos);
     }, [shogitter, moving]);
 
     return {
