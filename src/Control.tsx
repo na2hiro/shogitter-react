@@ -27,7 +27,7 @@ const Control: FunctionComponent<ControlProps> = ({shogitter, reverse, rollback,
                         {rule._id}: {rule.name}
                     </option>)}
                 </optgroup>
-                <optgroup disabled label="Under construction">
+                <optgroup label="Under construction">
                     {rules.filter(rule=>allowedRules.indexOf(rule._id)<0).map(rule => <option key={rule._id} value={rule._id}>
                         {rule._id}: {rule.name}
                     </option>)}

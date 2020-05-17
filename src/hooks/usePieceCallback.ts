@@ -40,11 +40,14 @@ const usePieceCallback = (shogitter: Shogi, onCommand: (command: KifuCommand) =>
         }else if(activeCells.filter(cell=>cell.x==xy.x&&cell.y==xy.y).length>0) {
             console.log("drop: execute", xy)
             // TODO: Unless nakamaware, we don't want to drop to a piece on the same side
+            const from = new XY(moving.x, moving.y);
+            const to = new XY(xy.x, xy.y);
+            const shouldAsk = shogitter.shouldAskPromotion(to, from);
             onCommand({
                 type: "move",
                 from: [moving.x, moving.y],
                 to: [xy.x, xy.y],
-                nari: canPromote(shogitter.teban.getNowDirection(), moving, xy) && confirm("Promote?")
+                nari: shouldAsk && confirm("Promote?")
             })
             onClear();
             return true;
