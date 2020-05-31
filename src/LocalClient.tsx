@@ -3,7 +3,8 @@ import React, {FunctionComponent, useMemo, useState} from "react";
 import Shogi from "shogitter-ts";
 
 const config: UIConfig = {
-    initialReverse: false
+    initialReverse: false,
+    publicPath: "/public"
 }
 
 type Props = {

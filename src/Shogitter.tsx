@@ -16,6 +16,7 @@ import Control from "./Control";
 
 export type UIConfig = {
     initialReverse?: boolean;
+    publicPath: string;
 }
 
 export const DndWrapper = ({children}) => {
@@ -45,7 +46,7 @@ export const ShogitterWithoutDnDWrapper: FunctionComponent<Props> = ({data, onCo
     }, [shogitter]);
     useEffect(() => {
         try {
-            new Audio("./piece-effect.mp3").play();
+            new Audio(`${config?.publicPath}/piece-effect.mp3`).play();
         } catch (e) {
         }
     }, [data]);
@@ -55,7 +56,7 @@ export const ShogitterWithoutDnDWrapper: FunctionComponent<Props> = ({data, onCo
     const previousMove = shogitter.kifu.getXYByTesuu(shogitter.kifu.getTesuu() - 1);
 
     return (
-        <ContextWrapper zoom={zoom} rule={shogitter.rule} reverse={isReverse}>
+        <ContextWrapper zoom={zoom} rule={shogitter.rule} reverse={isReverse} config={config || {publicPath: ""}}>
             <PiecePreview/>
             <div style={{
                 display: "flex",
