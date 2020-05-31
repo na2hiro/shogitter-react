@@ -35,9 +35,10 @@ export type Props = {
 export const ShogitterWithoutDnDWrapper: FunctionComponent<Props> = ({data, onCommand, config}) => {
     const [speculative, setSpeculative] = useState(false);
     const [shogitter, setShogitter] = useState(() => new Shogi(data));
+    const audio = useMemo(() => new Audio(`${config?.publicPath}/piece-effect.mp3`), []);
     const sound = useCallback(() => {
         try {
-            new Audio(`${config?.publicPath}/piece-effect.mp3`).play();
+            audio.play();
         } catch (e) {
         }
     }, [config])
