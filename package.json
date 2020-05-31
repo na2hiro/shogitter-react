@@ -34,6 +34,6 @@
     "react-dnd-touch-backend": "^10.0.2",
     "react-dom": "^16.13.1",
     "react-responsive": "^8.0.3",
-    "shogitter-ts": "git+ssh://git@github.com/na2hiro/Shogitter.ts.git#v1.0.1-published"
+    "shogitter-ts": "git+ssh://git@github.com/na2hiro/Shogitter.ts.git#v1.0.3-published"
   }
 }
