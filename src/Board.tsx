@@ -2,6 +2,7 @@
 import {jsx, css} from "@emotion/core";
 import React, {FunctionComponent, useContext} from "react";
 import { BanObj } from "shogitter-ts/lib/Ban";
+import { PreviousMove } from "shogitter-ts/lib/Kifu";
 import Cell from "./Cell";
 import {Position} from "./Piece";
 import {ReverseContext, RuleContext} from "./utils/contexts";
@@ -15,22 +16,28 @@ type BoardProps = {
     onClear: () => void;
     activeCells: XYObj[];
     moving: Position | null;
+    previousMove: PreviousMove | null
 }
 const Board: FunctionComponent<BoardProps> = (props) => {
-    const {board, activeCells, moving, ...rest} = props;
+    const {board, activeCells, moving, previousMove, ...rest} = props;
     const {size} = useContext(RuleContext)!;
     const reversed = useContext(ReverseContext);
     // TODO size
     const trs: JSX.Element[] = [];
+
+    const handleCell = (x, y, tds) => {
+        const active = activeCells.filter(xy=>xy.x==x && xy.y==y).length>0;
+        const lastTo = !!previousMove && previousMove.to.x==x && previousMove.to.y == y;
+        tds.push(<td key={x}>
+            <Cell data={board[x-1][y-1]} xy={{x, y}} active={active} moving={moving!==null && ("x" in moving) && (moving.x==x && moving.y==y)}
+                  {...rest} lastTo={lastTo} />
+        </td>);
+    }
     if(reversed) {
         for(let y=size[1]; y>=1; y--) {
             const tds: JSX.Element[] = [];
             for(let x=1; x<=size[0]; x++) {
-                const active = activeCells.filter(xy=>xy.x==x && xy.y==y).length>0;
-                tds.push(<td key={x}>
-                    <Cell data={board[x-1][y-1]} xy={{x, y}} active={active} moving={moving!==null && ("x" in moving) && (moving.x==x && moving.y==y)}
-                          {...rest} />
-                </td>);
+                handleCell(x, y, tds);
             }
             trs.push(<tr key={y}>{tds}</tr>);
         }
@@ -38,11 +45,7 @@ const Board: FunctionComponent<BoardProps> = (props) => {
         for(let y=1; y<=size[1]; y++) {
             const tds: JSX.Element[] = [];
             for(let x=size[0]; x>=1; x--) {
-                const active = activeCells.filter(xy=>xy.x==x && xy.y==y).length>0;
-                tds.push(<td key={x}>
-                    <Cell data={board[x-1][y-1]} xy={{x, y}} active={active} moving={moving!==null && ("x" in moving) && (moving.x==x && moving.y==y)}
-                          {...rest} />
-                </td>);
+                handleCell(x, y, tds);
             }
             trs.push(<tr key={y}>{tds}</tr>);
         }
