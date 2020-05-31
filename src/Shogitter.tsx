@@ -13,10 +13,12 @@ import {PiecePreview} from "./Piece";
 import ContextWrapper from "./utils/ContextWrapper";
 import useReverse from "./hooks/useReverse";
 import Control from "./Control";
+import useControlCallback from "./hooks/useControlCallback";
 
 export type UIConfig = {
     initialReverse?: boolean;
     publicPath: string;
+    allowSpeculative?: boolean;
 }
 
 export const DndWrapper = ({children}) => {
@@ -31,29 +33,44 @@ export type Props = {
     config?: UIConfig;
 }
 export const ShogitterWithoutDnDWrapper: FunctionComponent<Props> = ({data, onCommand, config}) => {
-    const {ban, players, kifu, ...rest} = data;
-    const [isReverse, reverse] = useReverse(config?.initialReverse);
-    const shogitter: Shogi = useMemo(() => new Shogi(data), [data]);
-    const {moving, activeCells, onDrag, onDrop, onClear, onCellClick, onHandClick} = usePieceCallback(shogitter, onCommand);
-    const rollback = useCallback(() => {
-        onCommand({type: "rollback"})
-    }, [shogitter]);
-    const resign = useCallback(() => {
-        onCommand({type: "resign"})
-    }, [shogitter]);
-    const initialize = useCallback((ruleId: number) => {
-        onCommand({type: "initialize", ruleId})
-    }, [shogitter]);
-    useEffect(() => {
+    const [speculative, setSpeculative] = useState(false);
+    const [shogitter, setShogitter] = useState(() => new Shogi(data));
+    const sound = useCallback(() => {
         try {
             new Audio(`${config?.publicPath}/piece-effect.mp3`).play();
         } catch (e) {
         }
+    }, [config])
+    const onLocalCommand = useCallback((command)=>{
+        if(speculative) {
+            alert("Not synchronized with server. Please wait for a while or refresh the page.")
+            return;
+        }
+        onCommand(command);
+        if(config?.allowSpeculative) {
+            try {
+                shogitter.runCommand(command);
+                setSpeculative(true);
+                sound();
+            } catch (e) {
+                setShogitter(new Shogi(data));
+            }
+        }
+    }, [shogitter, data, speculative]);
+    const {moving, activeCells, onDrag, onDrop, onClear, onCellClick, onHandClick} = usePieceCallback(shogitter, onLocalCommand);
+    const {rollback, resign, initialize} = useControlCallback(shogitter, onLocalCommand);
+    useEffect(() => {
+        if (!speculative) {
+            sound();
+        }
+        setShogitter(new Shogi(data));
+        setSpeculative(false);
     }, [data]);
-
+    const [isReverse, reverse] = useReverse(config?.initialReverse);
     const zoom = useZoom();
 
     const previousMove = shogitter.kifu.getXYByTesuu(shogitter.kifu.getTesuu() - 1);
+    const {ban, players, kifu, ...rest} = speculative ? shogitter.getObject() : data;
 
     return (
         <ContextWrapper zoom={zoom} rule={shogitter.rule} reverse={isReverse} config={config || {publicPath: ""}}>

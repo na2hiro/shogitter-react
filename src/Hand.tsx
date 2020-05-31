@@ -18,11 +18,11 @@ const Hand: FunctionComponent<Props> = (props) => {
     const pieces: JSX.Element[] = [];
     for(const species in data.mochigoma) {
         for(let i=0; i<data.mochigoma[species]; i++) {
-            pieces.push(<div style={{
+            pieces.push(<div key={species+i} style={{
                 display: "inline-block",
-                backgroundColor: (moving && "species" in moving && moving.species==species&&moving.direction==direction) ? "#ddd" : "inherit"
+                backgroundColor: (moving && "species" in moving && moving.species==species&&moving.direction==direction) ? "#bbb" : "inherit"
             }}>
-                <Piece key={species+i} species={species} direction={direction} {...rest} position={{direction, species}} />
+                <Piece species={species} direction={direction} {...rest} position={{direction, species}} />
             </div>);
         }
     }
